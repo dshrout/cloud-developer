@@ -29,7 +29,7 @@ function generateJWT(user: User): string {
     return jwt.sign(user.toJSON(), config.jwt.secret);
 }
 
-router.use(requireAuth);
+//router.use(requireAuth);
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
     if (!req.headers || !req.headers.authorization){

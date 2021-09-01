@@ -16,15 +16,12 @@ router.get('/', async (req: Request, res: Response) => {
     res.send(items);
 });
 
-//@TODO
-//Add an endpoint to GET a specific resource by Primary Key
-
-// update a specific resource
-router.put('/:id', 
+// GET a specific resource by Primary Key
+router.get('/:id', 
     requireAuth, 
     async (req: Request, res: Response) => {
         //@TODO try it yourself
-        const id:string = req.body.id.toString();
+        const id:string = req.params.id;
         if (!id){
             res.status(400).send("Invalid Request. Please check the request and try again.");
         }
@@ -38,7 +35,6 @@ router.put('/:id',
         res.status(200).send(feedItem);
 });
 
-
 // Get a signed url to put a new item in the bucket
 router.get('/signed-url/:fileName', 
     requireAuth, 
@@ -46,6 +42,38 @@ router.get('/signed-url/:fileName',
     let { fileName } = req.params;
     const url = AWS.getPutSignedUrl(fileName);
     res.status(201).send({url: url});
+});
+
+// update a specific resource
+router.put('/:id', 
+    requireAuth, 
+    async (req: Request, res: Response) => {
+        const id:string = req.params.id.toString();
+        const caption = req.body.caption;
+        const fileName = req.body.url;
+
+        if (!id){
+            res.status(400).send("Invalid Request. Please check the request and try again.");
+        }
+
+        const feedItem = await FeedItem.findOne({where: {id: id}});
+
+        if (!feedItem) {
+            res.status(404).send();
+        }
+
+        if (caption) {
+            feedItem.caption = caption;
+        }
+
+        if (fileName) {
+            feedItem.url = fileName;
+        }
+    
+        const saved_item = await feedItem.save();
+    
+        saved_item.url = AWS.getGetSignedUrl(saved_item.url);
+        res.status(200).send(saved_item);
 });
 
 // Post meta data and the filename after a file is uploaded 
