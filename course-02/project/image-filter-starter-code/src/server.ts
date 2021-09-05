@@ -33,10 +33,10 @@ import urlExists from 'url-exists-deep';
   
   // Root Endpoint
   app.get( "/", async ( req, res ) => {
-    res.send("try GET /filtered-image?image_url={{}}")
+    res.send("try GET /filteredimage?image_url={{}}")
   });
   
-  app.get( "/filtered-image/", async ( req, res ) => {
+  app.get( "/filteredimage/", async ( req, res ) => {
     const urlOfImageToBeFiltered:string = req.query.image_url;
 
   //    1. validate the image_url query
