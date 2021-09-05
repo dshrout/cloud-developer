@@ -5,9 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rimraf www/ || true",
-    "build": "npm run clean && tsc && cp package.json www/package.json && mkdir www/tmp/ && cd www && zip -r Archive.zip . && cd ..",
-    "dev": "ts-node-dev ./src/server.ts"
+    "clean": "rm -rf www/ || true",
+    "build": "npm run clean && tsc && cp package.json www/package.json && mkdirp www/tmp/ && cd www && zip -r Archive.zip . && cd ..",
+    "step1": "npm run clean && tsc && cp package.json www/package.json",
+    "manual-step": "mkdirp www/tmp/",
+    "step2": "cd www && zip -r Archive.zip . && cd ..",
+    "dev": "ts-node-dev --respawn --transpileOnly ./src/server.ts"
   },
   "repository": {
     "type": "git",
@@ -23,6 +26,7 @@
     "@types/bluebird": "^3.5.27",
     "@types/express": "^4.17.0",
     "@types/node": "^11.13.17",
+    "mkdirp": "^1.0.4",
     "ts-node-dev": "^1.0.0-pre.40",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3"
@@ -30,6 +34,8 @@
   "dependencies": {
     "express": "^4.17.1",
     "jimp": "^0.16.1",
-    "rimraf": "^3.0.2"
-  }
+    "rimraf": "^3.0.2",
+    "url-exists-deep": "^2.1.0"
+  },
+  "engines": { "node" : "14.16.0" }
 }

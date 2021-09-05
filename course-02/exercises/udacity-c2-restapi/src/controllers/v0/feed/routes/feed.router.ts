@@ -26,7 +26,7 @@ router.get('/:id',
             res.status(400).send("Invalid Request. Please check the request and try again.");
         }
 
-        const feedItem = await FeedItem.findOne({where: {id: id}});
+        const feedItem:FeedItem = await FeedItem.findOne({where: {id: id}});
 
         if (!feedItem) {
             res.status(404).send();
