@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 import urlExists from 'url-exists-deep';
@@ -32,11 +32,11 @@ import urlExists from 'url-exists-deep';
   //! END @TODO1
   
   // Root Endpoint
-  app.get( "/", async ( req, res ) => {
+  app.get( "/", async ( req:Request, res:Response ) => {
     res.send("try GET /filteredimage?image_url={{}}")
   });
   
-  app.get( "/filteredimage/", async ( req, res ) => {
+  app.get( "/filteredimage/", async ( req:Request, res:Response ) => {
     const urlOfImageToBeFiltered:string = req.query.image_url;
 
   //    1. validate the image_url query
