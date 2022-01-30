@@ -1,21 +1,28 @@
-import 'source-map-support/register'
+import 'source-map-support/register';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import * as middy from 'middy';
+import { cors, httpErrorHandler } from 'middy/middlewares';
+import { setAttachmentUrl } from '../../helpers/todos';
+import { getUserId } from '../utils';
+import { getAttachmentUrl } from '../../helpers/attachmentUtils';
 
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import * as middy from 'middy'
-import { cors, httpErrorHandler } from 'middy/middlewares'
+const bucketName = process.env.ATTACHMENT_S3_BUCKET;
 
-import { createAttachmentPresignedUrl } from '../../businessLogic/todos'
-import { getUserId } from '../utils'
+export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+  const todoId = event.pathParameters.todoId;
+  const userId = getUserId(event);
+  const uploadUrl = getAttachmentUrl(todoId);
+  const attachmentUrl: string = `https://${bucketName}.s3.amazonaws.com/${todoId}`
 
-export const handler = middy(
-  async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const todoId = event.pathParameters.todoId
-    // TODO: Return a presigned URL to upload a file for a TODO item with the provided id
-    
+  await setAttachmentUrl(userId, todoId, attachmentUrl);
 
-    return undefined
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      uploadUrl
+    })
   }
-)
+})
 
 handler
   .use(httpErrorHandler())
