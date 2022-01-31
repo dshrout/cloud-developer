@@ -6,15 +6,22 @@ import { getTodoById, updateTodo } from '../../helpers/todos';
 import { TodoUpdate } from '../../models/TodoUpdate';
 import { getUserId } from '../utils';
 import { createLogger } from '../../utils/logger';
+import { IsNullOrWhiteSpace } from '../../helpers/stringHelper';
 
 const logger = createLogger('updateTodo');
 
 export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   logger.info('Update Todo: ', event);
 
-  const todoId = event.pathParameters.todoId
   const userId = getUserId(event)
+  const todoId = event.pathParameters.todoId
   const todoUpdate: TodoUpdate = JSON.parse(event.body)
+  if (IsNullOrWhiteSpace(userId) || IsNullOrWhiteSpace(todoId) || IsNullOrWhiteSpace(todoUpdate.name) || IsNullOrWhiteSpace(todoUpdate.dueDate)) {
+    return {
+      statusCode: 400,
+      body: 'One or more items are empty.'
+    }
+  }
 
   const item = await getTodoById(userId, todoId);
   if (item.length === 0) {

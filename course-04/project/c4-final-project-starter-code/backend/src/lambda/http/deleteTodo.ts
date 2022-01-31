@@ -5,14 +5,21 @@ import { cors, httpErrorHandler } from 'middy/middlewares';
 import { getTodoById, deleteTodo } from '../../helpers/todos';
 import { getUserId } from '../utils';
 import { createLogger } from '../../utils/logger';
+import { IsNullOrWhiteSpace } from '../../helpers/stringHelper';
 
 const logger = createLogger('deleteTodo');
 
 export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   logger.info('Delete Todo: ', event);
 
-  const todoId = event.pathParameters.todoId
   const userId = getUserId(event)
+  const todoId = event.pathParameters.todoId
+  if (IsNullOrWhiteSpace(userId) || IsNullOrWhiteSpace(todoId)) {
+    return {
+      statusCode: 400,
+      body: 'One or more items are empty.'
+    }
+  }
 
   const item = await getTodoById(userId, todoId);
   if (item.length === 0) {
